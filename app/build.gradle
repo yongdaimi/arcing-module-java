@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+def static releaseTime() {
+    return new Date().format("yyyyMMdd-HHmm", TimeZone.getTimeZone(TimeZone.getDefault().getID()))
+}
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        testInstrumentationRunner rootProject.ext.android.testInstrumentationRunner
+        multiDexEnabled rootProject.ext.android.multiDexEnabled
+        flavorDimensions rootProject.ext.android.flavorDimensions
+    }
+
+    signingConfigs {
+        release {
+            keyAlias rootProject.ext.sign.keyAlias
+            keyPassword rootProject.ext.sign.keyPassword
+            storeFile file(rootProject.ext.sign.storeFile)
+            storePassword rootProject.ext.sign.storePassword
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable rootProject.ext.android.releaseDebuggable
+            jniDebuggable rootProject.ext.android.releaseDebuggable
+            shrinkResources rootProject.ext.android.releaseShrinkResources
+            zipAlignEnabled rootProject.ext.android.releaseZipAlignEnabled
+            minifyEnabled rootProject.ext.android.releaseMinifyEnabled
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            debuggable rootProject.ext.android.debugDebuggable
+            jniDebuggable rootProject.ext.android.debugDebuggable
+            shrinkResources rootProject.ext.android.debugShrinkResources
+            zipAlignEnabled rootProject.ext.android.debugZipAlignEnabled
+            minifyEnabled rootProject.ext.android.debugMinifyEnabled
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "module-v${defaultConfig.versionCode}-${defaultConfig.versionName}-${releaseTime()}.apk"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.java.sourceCompatibility
+        targetCompatibility rootProject.ext.java.targetCompatibility
+    }
+}
+
+dependencies {
+    if (!rootProject.ext.android.isModule) {
+        implementation project(':module_main')
+        implementation project(':module_login')
+        implementation project(':module_me')
+    }
+}

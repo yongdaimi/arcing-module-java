@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+
+        testInstrumentationRunner rootProject.ext.android.testInstrumentationRunner
+
+        // Configure the compiler parameters of the ARouter, each component needs to be configured
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable rootProject.ext.android.releaseDebuggable
+            zipAlignEnabled rootProject.ext.android.releaseZipAlignEnabled
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable rootProject.ext.android.debugDebuggable
+            zipAlignEnabled rootProject.ext.android.debugZipAlignEnabled
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.java.sourceCompatibility
+        targetCompatibility rootProject.ext.java.targetCompatibility
+    }
+
+}
+
+
+dependencies {
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api "androidx.appcompat:appcompat:$rootProject.ext.dependencies.appcompatVersion"
+    api "androidx.constraintlayout:constraintlayout:$rootProject.ext.dependencies.constraintlayoutVersion"
+    api "junit:junit:$rootProject.ext.dependencies.junitVersion"
+    api "androidx.test:runner:$rootProject.ext.dependencies.runnerVersion"
+    api "androidx.test.espresso:espresso-core:$rootProject.ext.dependencies.espressocoreVersion"
+    api "androidx.multidex:multidex:$rootProject.ext.dependencies.multidexVersion"
+    // ARouter API, only need to be introduced once in the base component
+    api "com.alibaba:arouter-api:$rootProject.ext.dependencies.arouterApiVersion"
+    // ARouter's compiler plug-in, each component needs to be introduced
+    annotationProcessor "com.alibaba:arouter-compiler:$rootProject.ext.dependencies.arouterCompilerVersion"
+}
